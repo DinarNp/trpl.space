@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lab Management - TRPL.SPACE Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <div class="cyber-grid"></div>
+  <div class="gradient-bg"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-bracket">&lt;</span>
+        <div>
+          <div class="logo-text">ADMIN PANEL </div>
+        </div>
+        <span class="logo-bracket">&gt;</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Projects</a>
+        <a href="labs.html" class="nav-link active">Labs</a>
+        <a href="lecturers.html" class="nav-link">Members</a>
+        <a href="../index.html" class="nav-link">View Site</a>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="admin-section">
+    <div class="container">
+      <div class="admin-header">
+        <div>
+          <h1 class="admin-title">
+            <span class="glitch">LAB MANAGEMENT</span>
+            <span class="admin-subtitle">Research Laboratories</span>
+          </h1>
+        </div>
+        <button class="btn-add-project" id="addLabBtn">+ Add Lab</button>
+      </div>
+
+      <!-- Loading -->
+      <div class="loading" id="loading">
+        <div class="loader"></div>
+        <p>Loading labs...</p>
+      </div>
+
+      <!-- Labs Table -->
+      <div class="admin-table-container" id="labsTableContainer" style="display: none;">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Members</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="labsTableBody">
+            <!-- Labs will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add/Edit Lab Modal -->
+  <div class="modal" id="labModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Add Lab</h2>
+        <button class="btn-close" id="closeModalBtn">&times;</button>
+      </div>
+      <form id="labForm">
+        <input type="hidden" id="labId">
+        
+        <div class="form-group">
+          <label class="form-label" for="labName">Lab Name *</label>
+          <input type="text" class="form-input" id="labName" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="labDescription">Description *</label>
+          <textarea class="form-textarea" id="labDescription" rows="5" required></textarea>
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn-submit" id="submitBtn">Save Lab</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal" id="deleteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">Delete Lab</h2>
+        <button class="btn-close" id="closeDeleteModalBtn">&times;</button>
+      </div>
+      <p>Are you sure you want to delete this lab?</p>
+      <p class="delete-warning">This action cannot be undone!</p>
+      <div class="modal-actions">
+        <button class="btn-delete" id="confirmDeleteBtn">Delete</button>
+        <button class="btn-submit" id="cancelDeleteBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toast"></div>
+
+  <script src="labs.js"></script>
+</body>
+</html>

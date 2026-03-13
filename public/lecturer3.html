@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecturer Magazine - TRPL.SPACE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/lecturer3-detail.css">
+</head>
+<body>
+  <div class="cyber-grid"></div>
+  <div class="gradient-bg"></div>
+
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-bracket">&lt;</span>
+        <div>
+          <div class="logo-text">TRPL.SPACE</div>
+        </div>
+        <span class="logo-bracket">&gt;</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html#home" class="nav-link">Home</a>
+        <a href="index.html#projects" class="nav-link">Projects</a>
+        <a href="labs.html" class="nav-link">Labs</a>
+        <a href="lecturers.html" class="nav-link">Members</a>
+        <a href="admin/index.html" class="nav-link admin-link" id="adminLink" style="display: none;">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="loading" id="loading" style="min-height: 60vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+    <div class="loader"></div>
+    <p style="margin-top: 1rem;">Loading magazine...</p>
+  </div>
+
+  <main id="lecturerContent" style="display: none;"></main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2024 <span class="neon-text">TRPL.SPACE</span>. All rights reserved.</p>
+        <p>Lab Rekayasa Perangkat Lunak</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/lecturer3-detail.js"></script>
+</body>
+</html>

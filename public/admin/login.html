@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - TRPL Lab</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/admin/login.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="cyber-grid"></div>
+    <div class="gradient-bg"></div>
+    
+    <!-- Login Section -->
+    <section class="login-section">
+        <div class="login-container">
+            <div class="login-box">
+                <div class="login-header">
+                    <div class="logo-login">
+                        <span class="logo-bracket">[</span>
+                        <span class="logo-text">ADMIN</span>
+                        <span class="logo-bracket">]</span>
+                    </div>
+                    <h1 class="login-title">
+                        <span class="glitch" data-text="ACCESS">ACCESS</span>
+                        <span class="login-subtitle">CONTROL PANEL</span>
+                    </h1>
+                </div>
+
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="btn-login">
+                        <span>🔐 Login</span>
+                    </button>
+
+                    <div class="login-info">
+                        <p>⚠️ Authorized Personnel Only</p>
+                    </div>
+                </form>
+
+                <div class="login-footer">
+                    <a href="/" class="back-link">← Back to Home</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="/admin/login.js"></script>
+</body>
+</html>

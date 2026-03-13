@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Project {
+  id          Int               @id @default(autoincrement())
+  title       String            @db.VarChar(255)
+  description String            @db.Text
+  subdomain   String            @unique @db.VarChar(100)
+  url         String            @db.VarChar(500)
+  category    String            @db.VarChar(100)
+  tags        String            @db.Text // JSON array as string
+  status      String            @default("active") @db.VarChar(50) // active, maintenance, archived
+  color       String?           @db.VarChar(100) // CSS gradient untuk card/thumbnail
+  icon        String?           @db.VarChar(50) // Emoji atau icon untuk thumbnail
+  created     String?           @db.VarChar(100) // Tanggal custom yang bisa diedit (misal: "Januari 2024")
+  featured    Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  lecturers   ProjectLecturer[] // Relation to lecturers
+
+  @@index([category])
+  @@index([status])
+  @@index([featured])
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(255) // Hashed password
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Lab {
+  id          Int           @id @default(autoincrement())
+  name        String        @db.VarChar(255)
+  description String        @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  lecturers   LecturerLab[] // Relation to lecturers
+
+  @@index([name])
+}
+
+model Lecturer {
+  id                 Int               @id @default(autoincrement())
+  nip                String            @unique @db.VarChar(50)
+  name               String            @db.VarChar(255)
+  shortName          String            @unique @db.VarChar(20) // Tag singkatan, contoh: "DRN", "AKH"
+  email              String            @db.VarChar(255)
+  photo              String?           @db.VarChar(500) // URL atau path foto
+  functionalPosition String?           @db.VarChar(100) // Lektor, Lektor Kepala, Profesor, etc
+  structuralPosition String?           @db.VarChar(100) // Kepala Lab, Ketua Prodi, etc
+  googleScholar      String?           @db.VarChar(500)
+  scopus             String?           @db.VarChar(500)
+  sinta              String?           @db.VarChar(500)
+  academicStaffUGM   String?           @db.VarChar(500)
+  pddikti            String?           @db.VarChar(500)
+  researchInterest   String?           @db.Text // Minat penelitian
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  educations         Education[] // One to many
+  labs               LecturerLab[] // Many to many with Lab
+  projects           ProjectLecturer[] // Many to many with Project
+
+  @@index([nip])
+  @@index([shortName])
+}
+
+model Education {
+  id          Int      @id @default(autoincrement())
+  lecturerId  Int
+  degree      String   @db.VarChar(10) // S1, S2, S3
+  institution String   @db.VarChar(255)
+  major       String   @db.VarChar(255)
+  thesisTitle String?  @db.VarChar(500) // Judul TA/Tesis/Disertasi
+  startYear   Int
+  endYear     Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lecturer    Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@index([lecturerId])
+}
+
+model LecturerLab {
+  lecturerId Int
+  labId      Int
+  lecturer   Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+  lab        Lab      @relation(fields: [labId], references: [id], onDelete: Cascade)
+
+  @@id([lecturerId, labId])
+  @@index([lecturerId])
+  @@index([labId])
+}
+
+model ProjectLecturer {
+  projectId  Int
+  lecturerId Int
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  lecturer   Lecturer @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, lecturerId])
+  @@index([projectId])
+  @@index([lecturerId])
+}

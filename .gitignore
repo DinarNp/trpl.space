@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.log
+.DS_Store
+
+# SQL files (use Prisma migrations instead)
+*.sql
+
+# Development documentation (keep only README.md)
+*.md
+!README.md

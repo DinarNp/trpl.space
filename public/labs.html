@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Labs - TRPL.SPACE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhana:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="cyber-grid"></div>
+  <div class="gradient-bg"></div>
+
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-bracket">&lt;</span>
+        <div>
+          <div class="logo-text">TRPL.SPACE</div>
+        </div>
+        <span class="logo-bracket">&gt;</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html#home" class="nav-link">Home</a>
+        <a href="index.html#projects" class="nav-link">Projects</a>
+        <a href="labs.html" class="nav-link active">Labs</a>
+        <a href="lecturers.html" class="nav-link">Members</a>
+        <a href="admin/index.html" class="nav-link admin-link" id="adminLink" style="display: none;">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="padding: 6rem 0 4rem;">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="glitch">RESEARCH</span>
+          <span class="hero-subtitle">LABORATORIES</span>
+        </h1>
+        <p class="hero-description">
+          Explore our cutting-edge research laboratories dedicated to advancing technology and innovation
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="projects-section" style="padding-top: 2rem;">
+    <div class="container">
+      <div class="loading" id="loading">
+        <div class="loader"></div>
+        <p>Loading laboratories...</p>
+      </div>
+
+      <div id="labsContainer" class="labs-grid" style="display: none;"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2024 <span class="neon-text">TRPL.SPACE</span>. All rights reserved.</p>
+        <p>Lab Rekayasa Perangkat Lunak</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/labs.js"></script>
+</body>
+</html>

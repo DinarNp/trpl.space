@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - TRPL Lab</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/admin/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Background Effects -->
+    <div class="cyber-grid"></div>
+    <div class="gradient-bg"></div>
+    
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-bracket">[</span>
+                <span class="logo-text">ADMIN PANEL</span>
+                <span class="logo-bracket">]</span>
+                <span class="logo-subtitle"></span>
+            </div>
+            <nav class="nav">
+                <a href="/" class="nav-link">Home</a>
+                <a href="index.html" class="nav-link active">Projects</a>
+                <a href="labs.html" class="nav-link">Labs</a>
+                <a href="lecturers.html" class="nav-link">Members</a>
+                <button class="btn-logout" id="btnLogout">🚪 Logout</button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Admin Content -->
+    <section class="admin-section">
+        <div class="container">
+            <div class="admin-header">
+                <h1 class="admin-title">
+                    <span class="glitch" data-text="PROJECT">PROJECT</span>
+                    <span class="admin-subtitle">MANAGEMENT</span>
+                </h1>
+                <button class="btn-add-project" id="btnAddProject">
+                    <span>+ Add New Project</span>
+                </button>
+            </div>
+
+            <!-- Stats Dashboard -->
+            <div class="admin-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statTotal">0</div>
+                        <div class="stat-label">Total Projects</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statActive">0</div>
+                        <div class="stat-label">Active</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔧</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statMaintenance">0</div>
+                        <div class="stat-label">Maintenance</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="statFeatured">0</div>
+                        <div class="stat-label">Featured</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Projects Table -->
+            <div class="admin-table-container">
+                <table class="admin-table" id="projectsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Subdomain</th>
+                            <th>Status</th>
+                            <th>Featured</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="7" class="loading-row">
+                                <div class="loader"></div>
+                                <span>Loading projects...</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Form -->
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add New Project</h2>
+                <button class="modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <form class="project-form" id="projectForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="title">Project Title *</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <input type="text" id="category" name="category" required placeholder="e.g. Web App, Mobile App">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description *</label>
+                    <textarea id="description" name="description" rows="4" required></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="subdomain">Subdomain *</label>
+                        <input type="text" id="subdomain" name="subdomain" required placeholder="e.g. myproject">
+                        <small>Will be accessible at: subdomain.trpl.space</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="url">Project URL *</label>
+                        <input type="url" id="url" name="url" required placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="icon">Icon/Emoji *</label>
+                        <input type="text" id="icon" name="icon" placeholder="🚀" maxlength="10">
+                        <small>Emoji atau karakter untuk thumbnail (contoh: 🚀 💻 🎨 📱)</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="color">Background Color (Opsional)</label>
+                        <div class="color-palette">
+                            <!-- No Background Option -->
+                            <div class="palette-item no-bg" data-color="" title="No Background">
+                                <span class="no-bg-icon">∅</span>
+                            </div>
+                            
+                            <!-- Gradients - Row 1 (Neon Vibes) -->
+                            <div class="palette-item" data-color="linear-gradient(135deg, #00f0ff, #a855f7)" style="background: linear-gradient(135deg, #00f0ff, #a855f7);" title="Cyber Neon"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #ff006e, #0080ff)" style="background: linear-gradient(135deg, #ff006e, #0080ff);" title="Pink Sapphire"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #00ff88, #00f0ff)" style="background: linear-gradient(135deg, #00ff88, #00f0ff);" title="Mint Fresh"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #ffea00, #ff006e)" style="background: linear-gradient(135deg, #ffea00, #ff006e);" title="Sunset Glow"></div>
+                            
+                            <!-- Row 2 (Deep & Rich) -->
+                            <div class="palette-item" data-color="linear-gradient(135deg, #667eea, #764ba2)" style="background: linear-gradient(135deg, #667eea, #764ba2);" title="Purple Dream"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #f093fb, #f5576c)" style="background: linear-gradient(135deg, #f093fb, #f5576c);" title="Cotton Candy"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #4facfe, #00f2fe)" style="background: linear-gradient(135deg, #4facfe, #00f2fe);" title="Ocean Blue"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #43e97b, #38f9d7)" style="background: linear-gradient(135deg, #43e97b, #38f9d7);" title="Emerald"></div>
+                            
+                            <!-- Row 3 (Warm & Fire) -->
+                            <div class="palette-item" data-color="linear-gradient(135deg, #fa709a, #fee140)" style="background: linear-gradient(135deg, #fa709a, #fee140);" title="Peach"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #ff9a56, #ff6a88)" style="background: linear-gradient(135deg, #ff9a56, #ff6a88);" title="Coral Reef"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #ffecd2, #fcb69f)" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);" title="Sunrise"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #ff0844, #ffb199)" style="background: linear-gradient(135deg, #ff0844, #ffb199);" title="Berry"></div>
+                            
+                            <!-- Row 4 (Cool & Dark) -->
+                            <div class="palette-item" data-color="linear-gradient(135deg, #30cfd0, #330867)" style="background: linear-gradient(135deg, #30cfd0, #330867);" title="Deep Sea"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #a8edea, #fed6e3)" style="background: linear-gradient(135deg, #a8edea, #fed6e3);" title="Pastel Sky"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #ff6e7f, #bfe9ff)" style="background: linear-gradient(135deg, #ff6e7f, #bfe9ff);" title="Horizon"></div>
+                            <div class="palette-item" data-color="linear-gradient(135deg, #e0c3fc, #8ec5fc)" style="background: linear-gradient(135deg, #e0c3fc, #8ec5fc);" title="Lavender"></div>
+                        </div>
+                        <input type="text" id="color" name="color" placeholder="Pilih dari palette atau kosongkan">
+                        <small>Klik palette untuk pilih, klik lagi untuk batalkan. Atau kosongkan untuk default.</small>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="created">Tanggal Dibuat *</label>
+                        <input type="date" id="created" name="created" required>
+                        <small>Tanggal project dibuat</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="tags">Tags (comma-separated)</label>
+                        <input type="text" id="tags" name="tags" placeholder="react, typescript, nodejs">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="status">Status *</label>
+                        <select id="status" name="status" required>
+                            <option value="active">Active (Live - Project sedang berjalan)</option>
+                            <option value="maintenance">Maintenance (Dalam perbaikan)</option>
+                            <option value="archived">Archived (Tidak aktif)</option>
+                        </select>
+                        <small>Status project yang akan ditampilkan</small>
+                    </div>
+                    <div class="form-group">
+                        <label>Featured Project</label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="featured" name="featured">
+                            <span>Tampilkan sebagai featured (prioritas tampil di atas)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lecturers">Lecturers (Opsional)</label>
+                    <select id="lecturers" name="lecturers" multiple style="min-height: 100px;">
+                        <!-- Loaded from API -->
+                    </select>
+                    <small>Hold Ctrl (Windows) or Cmd (Mac) to select multiple lecturers</small>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" id="btnCancel">Cancel</button>
+                    <button type="submit" class="btn-submit" id="btnSubmit">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2 class="modal-title">Confirm Delete</h2>
+                <button class="modal-close" id="btnCloseDeleteModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this project?</p>
+                <p class="delete-warning">This action cannot be undone.</p>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-cancel" id="btnCancelDelete">Cancel</button>
+                <button type="button" class="btn-delete" id="btnConfirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <span id="toastMessage"></span>
+    </div>
+
+    <script src="/admin/admin.js"></script>
+</body>
+</html>
