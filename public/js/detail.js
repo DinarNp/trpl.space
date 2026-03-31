@@ -47,6 +47,16 @@ async function loadProjectDetail(id) {
   }
 }
 
+// Convert Google Drive share link to embed URL
+function getDriveEmbedUrl(url) {
+  if (!url) return null;
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) {
+    return `https://drive.google.com/file/d/${match[1]}/preview`;
+  }
+  return url;
+}
+
 // Render Project Detail
 function renderProjectDetail(project) {
   const statusText = project.status === 'active' ? 'Online' : 
@@ -153,6 +163,35 @@ function renderProjectDetail(project) {
                 `;
               }).join('')}
             </div>
+          </div>
+        ` : ''}
+
+        ${(project.pptLink || project.videoLink) ? `
+          <div class="detail-media-section">
+            ${project.videoLink ? `
+              <div class="media-embed-block">
+                <h3 class="media-embed-title">🎬 Video Demo</h3>
+                <div class="media-embed-wrapper video">
+                  <iframe src="${getDriveEmbedUrl(project.videoLink)}"
+                    allowfullscreen
+                    loading="lazy"
+                    frameborder="0">
+                  </iframe>
+                </div>
+              </div>
+            ` : ''}
+            ${project.pptLink ? `
+              <div class="media-embed-block">
+                <h3 class="media-embed-title">📊 Presentasi</h3>
+                <div class="media-embed-wrapper ppt">
+                  <iframe src="${getDriveEmbedUrl(project.pptLink)}"
+                    allowfullscreen
+                    loading="lazy"
+                    frameborder="0">
+                  </iframe>
+                </div>
+              </div>
+            ` : ''}
           </div>
         ` : ''}
 

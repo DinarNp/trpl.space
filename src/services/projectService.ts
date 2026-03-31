@@ -13,6 +13,8 @@ export interface CreateProjectDTO {
   icon?: string;
   created?: string;
   featured?: boolean;
+  pptLink?: string;
+  videoLink?: string;
   lecturerIds?: number[];
 }
 
@@ -88,7 +90,13 @@ export const projectService = {
     if (createData.created === '') {
       createData.created = null;
     }
-    
+    if (createData.pptLink === '') {
+      createData.pptLink = null;
+    }
+    if (createData.videoLink === '') {
+      createData.videoLink = null;
+    }
+
     // Add lecturers if provided
     if (lecturerIds && lecturerIds.length > 0) {
       createData.lecturers = {
@@ -134,7 +142,13 @@ export const projectService = {
     if (updateData.created === '') {
       updateData.created = null;
     }
-    
+    if (updateData.pptLink === '') {
+      updateData.pptLink = null;
+    }
+    if (updateData.videoLink === '') {
+      updateData.videoLink = null;
+    }
+
     // Handle lecturers update
     if (lecturerIds !== undefined) {
       // Delete all existing lecturer relationships

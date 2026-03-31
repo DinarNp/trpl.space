@@ -14,6 +14,8 @@ const createProjectSchema = z.object({
   icon: z.string().optional(),
   created: z.string().optional(),
   featured: z.boolean().optional(),
+  pptLink: z.string().optional(),
+  videoLink: z.string().optional(),
   lecturerIds: z.array(z.number()).optional()
 });
 

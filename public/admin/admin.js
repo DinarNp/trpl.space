@@ -250,7 +250,9 @@ function openModal(project = null) {
     document.getElementById('tags').value = project.tags.join(', ');
     document.getElementById('status').value = project.status;
     document.getElementById('featured').checked = project.featured;
-    
+    document.getElementById('pptLink').value = project.pptLink || '';
+    document.getElementById('videoLink').value = project.videoLink || '';
+
     // Select lecturers
     const lecturerSelect = document.getElementById('lecturers');
     if (lecturerSelect && project.lecturers) {
@@ -344,6 +346,8 @@ async function handleSubmit(e) {
     tags: tags,
     status: formData.get('status'),
     featured: formData.get('featured') === 'on',
+    pptLink: formData.get('pptLink') || '',
+    videoLink: formData.get('videoLink') || '',
     lecturerIds: selectedLecturers
   };
 

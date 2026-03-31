@@ -23,6 +23,8 @@ model Project {
   icon        String?           @db.VarChar(50) // Emoji atau icon untuk thumbnail
   created     String?           @db.VarChar(100) // Tanggal custom yang bisa diedit (misal: "Januari 2024")
   featured    Boolean           @default(false)
+  pptLink     String?           @db.VarChar(500) // Google Drive link untuk PPT
+  videoLink   String?           @db.VarChar(500) // Google Drive link untuk Video
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
   lecturers   ProjectLecturer[] // Relation to lecturers

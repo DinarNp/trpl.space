@@ -10,3 +10,15 @@ dist/
 # Development documentation (keep only README.md)
 *.md
 !README.md
+!DEPLOY_MANUAL.md
+
+# Deployment artifacts
+upload-package/
+deploy/
+*.tar.gz
+*.zip
+*.sh
+Dockerfile
+docker-compose.yml
+.dockerignore
+DEPLOY_MANUAL.md
