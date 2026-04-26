@@ -2,6 +2,31 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { projectService, CreateProjectDTO, UpdateProjectDTO } from '../services/projectService';
 import { z } from 'zod';
 
+const fieldLabels: Record<string, string> = {
+  title: 'Judul',
+  description: 'Deskripsi',
+  subdomain: 'Subdomain',
+  url: 'URL',
+  category: 'Kategori',
+  tags: 'Tags',
+  status: 'Status',
+  icon: 'Icon',
+  color: 'Warna',
+  created: 'Tanggal',
+  pptLink: 'Link PPT',
+  videoLink: 'Link Video',
+};
+
+function formatZodError(errors: any[]): string {
+  return errors.map(e => {
+    const field = fieldLabels[e.path?.[0]] || e.path?.join('.') || 'Field';
+    if (e.message === 'Required') return `${field} wajib diisi`;
+    if (e.message.includes('Invalid url')) return `${field} harus berupa URL yang valid (contoh: https://...)`;
+    if (e.message.includes('too_small')) return `${field} tidak boleh kosong`;
+    return `${field}: ${e.message}`;
+  }).join(' | ');
+}
+
 const createProjectSchema = z.object({
   title: z.string().min(1).max(255),
   description: z.string().min(1),
@@ -59,18 +84,17 @@ export const projectController = {
     try {
       const validatedData = createProjectSchema.parse(request.body);
       const project = await projectService.createProject(validatedData as CreateProjectDTO);
-      
-      const parsedProject = {
-        ...project,
-        tags: JSON.parse(project.tags)
-      };
-
+      const parsedProject = { ...project, tags: JSON.parse(project.tags) };
       return reply.status(201).send({ success: true, data: parsedProject });
     } catch (error: any) {
       if (error.name === 'ZodError') {
-        return reply.status(400).send({ success: false, error: error.errors });
+        const msg = formatZodError(error.errors);
+        return reply.status(400).send({ success: false, error: msg });
       }
-      return reply.status(500).send({ success: false, error: error.message });
+      if (error.code === 'P2002' && error.meta?.target?.includes('subdomain')) {
+        return reply.status(400).send({ success: false, error: 'Subdomain sudah digunakan, pilih subdomain lain.' });
+      }
+      return reply.status(500).send({ success: false, error: 'Terjadi kesalahan server, coba lagi.' });
     }
   },
 
@@ -78,20 +102,18 @@ export const projectController = {
     try {
       const id = parseInt(request.params.id);
       const validatedData = updateProjectSchema.parse(request.body);
-      
       const project = await projectService.updateProject(id, validatedData as UpdateProjectDTO);
-      
-      const parsedProject = {
-        ...project,
-        tags: JSON.parse(project.tags)
-      };
-
+      const parsedProject = { ...project, tags: JSON.parse(project.tags) };
       return reply.send({ success: true, data: parsedProject });
     } catch (error: any) {
       if (error.name === 'ZodError') {
-        return reply.status(400).send({ success: false, error: error.errors });
+        const msg = formatZodError(error.errors);
+        return reply.status(400).send({ success: false, error: msg });
       }
-      return reply.status(500).send({ success: false, error: error.message });
+      if (error.code === 'P2002' && error.meta?.target?.includes('subdomain')) {
+        return reply.status(400).send({ success: false, error: 'Subdomain sudah digunakan, pilih subdomain lain.' });
+      }
+      return reply.status(500).send({ success: false, error: 'Terjadi kesalahan server, coba lagi.' });
     }
   },
 

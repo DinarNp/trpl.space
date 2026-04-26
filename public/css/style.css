@@ -1,22 +1,25 @@
 :root {
-  /* Neon Colors */
-  --neon-cyan: #00f0ff;
-  --neon-pink: #ff006e;
-  --neon-purple: #a855f7;
-  --neon-green: #00ff88;
-  --neon-blue: #0080ff;
-  --neon-yellow: #ffea00;
-  
-  /* Dark Theme */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #121218;
-  --bg-card: #1a1a24;
-  --text-primary: #e0e0e0;
-  --text-secondary: #a0a0a0;
-  
+  /* Neon Colors — brighter, more vibrant */
+  --neon-cyan: #00e5ff;
+  --neon-pink: #ff2d8c;
+  --neon-purple: #c44dff;
+  --neon-green: #00ffa3;
+  --neon-blue: #2979ff;
+  --neon-yellow: #ffe600;
+  --neon-violet: #7c3aed;
+
+  /* Deep Navy Theme — lighter than pure black */
+  --bg-primary: #06091a;
+  --bg-secondary: #0a1228;
+  --bg-card: #0e1a35;
+  --bg-card-hover: #152240;
+  --text-primary: #eef2ff;
+  --text-secondary: #7b8fba;
+
   /* Gradients */
   --gradient-primary: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-purple) 100%);
   --gradient-secondary: linear-gradient(135deg, var(--neon-pink) 0%, var(--neon-blue) 100%);
+  --gradient-card: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(196,77,255,0.06) 100%);
 }
 
 * {
@@ -69,9 +72,10 @@ h1, h2, h3, h4, h5, h6 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.15) 0%, transparent 50%),
-              radial-gradient(circle at 40% 20%, rgba(255, 0, 110, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 15% 40%, rgba(0, 229, 255, 0.2) 0%, transparent 45%),
+              radial-gradient(circle at 85% 70%, rgba(196, 77, 255, 0.2) 0%, transparent 45%),
+              radial-gradient(circle at 50% 5%, rgba(255, 45, 140, 0.13) 0%, transparent 40%),
+              radial-gradient(circle at 70% 25%, rgba(41, 121, 255, 0.15) 0%, transparent 38%);
   pointer-events: none;
   z-index: 0;
 }
@@ -87,12 +91,13 @@ h1, h2, h3, h4, h5, h6 {
 /* Header */
 .header {
   padding: 1.5rem 0;
-  background: rgba(10, 10, 15, 0.8);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+  background: rgba(6, 9, 26, 0.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(0, 229, 255, 0.2);
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
 }
 
 .header .container {
@@ -313,10 +318,11 @@ h1, h2, h3, h4, h5, h6 {
 .view-toggle {
   display: flex;
   gap: 0.5rem;
-  background: var(--bg-card);
+  background: rgba(14, 26, 53, 0.7);
+  backdrop-filter: blur(8px);
   padding: 0.5rem;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 229, 255, 0.2);
 }
 
 .view-btn {
@@ -349,8 +355,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .neon-select {
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 240, 255, 0.3);
+  background: rgba(14, 26, 53, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 229, 255, 0.3);
   color: var(--text-primary);
   padding: 0.75rem 2.5rem 0.75rem 1.5rem;
   border-radius: 8px;
@@ -404,9 +411,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Project Card */
 .project-card {
-  background: var(--bg-card);
-  border: 1px solid rgba(0, 240, 255, 0.2);
-  border-radius: 12px;
+  background: rgba(14, 26, 53, 0.75);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 229, 255, 0.18);
+  border-radius: 16px;
   overflow: hidden;
   transition: all 0.3s ease;
   cursor: pointer;
@@ -434,8 +442,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .project-card:hover {
   border-color: var(--neon-cyan);
-  box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
-  transform: translateY(-5px);
+  box-shadow: 0 0 40px rgba(0, 229, 255, 0.25), 0 8px 32px rgba(0, 0, 0, 0.4);
+  transform: translateY(-6px);
+  background: rgba(21, 34, 64, 0.85);
 }
 
 .project-thumbnail {
@@ -668,10 +677,11 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Footer */
 .footer {
-  background: var(--bg-secondary);
-  border-top: 1px solid rgba(0, 240, 255, 0.2);
+  background: rgba(10, 18, 40, 0.9);
+  border-top: 1px solid rgba(0, 229, 255, 0.15);
   padding: 2rem 0;
   margin-top: 4rem;
+  backdrop-filter: blur(10px);
 }
 
 .footer-content {

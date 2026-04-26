@@ -3,6 +3,7 @@ const API_BASE = '/api';
 
 // State
 let allProjects = [];
+let allProjectsRaw = [];
 let currentView = 'grid';
 let currentFilter = 'all';
 
@@ -57,7 +58,8 @@ async function loadProjects() {
     const data = await response.json();
     
     if (data.success) {
-      allProjects = data.data;
+      allProjectsRaw = data.data;
+      allProjects = allProjectsRaw.filter(p => p.category?.toLowerCase().trim() !== 'sistem');
       renderProjects(allProjects);
       updateStats();
       populateCategories();
@@ -189,9 +191,12 @@ function populateCategories() {
 function updateStats() {
   const totalProjects = allProjects.filter(p => p.status === 'active').length;
   const categories = new Set(allProjects.map(p => p.category));
-  
+  const totalSystems = allProjectsRaw.filter(p => p.category?.toLowerCase().trim() === 'sistem').length;
+
   animateNumber(totalProjectsEl, totalProjects);
   animateNumber(totalCategoriesEl, categories.size);
+  const totalSystemsEl = document.getElementById('totalSystems');
+  if (totalSystemsEl) animateNumber(totalSystemsEl, totalSystems);
 }
 
 // Animate Number

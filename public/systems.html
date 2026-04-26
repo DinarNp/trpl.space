@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Prodi - TRPL.SPACE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .systems-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .system-card {
+      background: rgba(14, 26, 53, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .system-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--gradient-primary);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .system-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .system-card:hover {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.4);
+      transform: translateY(-6px);
+      background: rgba(21, 34, 64, 0.85);
+    }
+
+    .system-banner {
+      width: 100%;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .system-banner::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      opacity: 0.15;
+      filter: blur(30px);
+      transform: scale(1.5);
+    }
+
+    .system-banner-icon {
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 0 16px currentColor);
+    }
+
+    .system-body {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .system-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .system-name {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .system-status {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .status-dot.active { background: var(--neon-green); box-shadow: 0 0 8px var(--neon-green); }
+    .status-dot.maintenance { background: var(--neon-yellow); box-shadow: 0 0 8px var(--neon-yellow); }
+    .status-dot.archived { background: var(--text-secondary); animation: none; }
+
+    .system-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 1.25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .system-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .system-tag {
+      background: rgba(196, 77, 255, 0.12);
+      color: var(--neon-purple);
+      padding: 0.2rem 0.65rem;
+      border-radius: 10px;
+      font-size: 0.8rem;
+      border: 1px solid rgba(196, 77, 255, 0.25);
+    }
+
+    .system-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .system-lecturers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .lecturer-chip {
+      background: rgba(255, 45, 140, 0.1);
+      color: var(--neon-pink);
+      padding: 0.2rem 0.6rem;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      border: 1px solid rgba(255, 45, 140, 0.25);
+      text-transform: uppercase;
+    }
+
+    .btn-access {
+      background: var(--gradient-primary);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .btn-access:hover {
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.45);
+      transform: scale(1.05);
+    }
+
+    .systems-stats {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+    }
+
+    .sstat {
+      background: rgba(14, 26, 53, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 229, 255, 0.15);
+      border-radius: 12px;
+      padding: 1.2rem 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .sstat-num {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 900;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sstat-label {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 5rem 2rem;
+      color: var(--text-secondary);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+      font-size: 1rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: rgba(14, 26, 53, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: var(--text-primary);
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.25);
+    }
+
+    @media (max-width: 768px) {
+      .systems-grid {
+        grid-template-columns: 1fr;
+      }
+      .systems-stats {
+        gap: 1rem;
+      }
+    }
+
+    @media (min-width: 1680px) {
+      .systems-grid {
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-grid"></div>
+  <div class="gradient-bg"></div>
+
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <span class="logo-bracket">&lt;</span>
+        <div>
+          <div class="logo-text">TRPL.SPACE</div>
+        </div>
+        <span class="logo-bracket">&gt;</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html#home" class="nav-link">Home</a>
+        <a href="index.html#projects" class="nav-link">Projects</a>
+        <a href="labs.html" class="nav-link">Labs</a>
+        <a href="lecturers.html" class="nav-link">Members</a>
+        <a href="systems.html" class="nav-link active">Systems</a>
+        <a href="admin/index.html" class="nav-link admin-link" id="adminLink" style="display: none;">Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero" style="padding: 6rem 0 4rem;">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="glitch">SISTEM</span>
+          <span class="hero-subtitle">PROGRAM STUDI TRPL</span>
+        </h1>
+        <p class="hero-description">
+          Direktori sistem dan aplikasi yang dikembangkan dan digunakan dalam lingkungan Program Studi Teknologi Rekayasa Perangkat Lunak
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="projects-section" style="padding-top: 1rem;">
+    <div class="container">
+
+      <div id="statsContainer" class="systems-stats" style="display: none;"></div>
+
+      <div class="filter-bar">
+        <div class="search-box">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Cari sistem...">
+        </div>
+        <select id="statusFilter" class="neon-select">
+          <option value="all">Semua Status</option>
+          <option value="active">Aktif</option>
+          <option value="maintenance">Maintenance</option>
+          <option value="archived">Arsip</option>
+        </select>
+      </div>
+
+      <div class="loading" id="loading">
+        <div class="loader"></div>
+        <p>Memuat sistem...</p>
+      </div>
+
+      <div id="systemsContainer" class="systems-grid" style="display: none;"></div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2024 <span class="neon-text">TRPL.SPACE</span>. All rights reserved.</p>
+        <p>Lab Rekayasa Perangkat Lunak</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/systems.js"></script>
+</body>
+</html>

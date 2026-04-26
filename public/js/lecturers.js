@@ -152,32 +152,21 @@ function renderLecturers() {
   lecturersContainer.innerHTML = html;
 }
 
-function createLecturerCard(lecturer) {
-  // Convert Google Drive link to direct image link
-  let photoUrl = lecturer.photo;
-  if (photoUrl && photoUrl.includes('drive.google.com')) {
-    const fileIdMatch = photoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (fileIdMatch && fileIdMatch[1]) {
-      const fileId = fileIdMatch[1];
-      photoUrl = `https://lh3.googleusercontent.com/d/${fileId}=w500`;
-    }
+function buildPhotoUrl(rawUrl) {
+  if (!rawUrl) return null;
+  if (rawUrl.includes('drive.google.com')) {
+    return `/api/image-proxy?url=${encodeURIComponent(rawUrl)}`;
   }
-  
-  // Add retry mechanism with multiple fallback URLs
-  const photoContent = photoUrl 
-    ? `<img src="${photoUrl}" alt="${lecturer.name}" loading="lazy" 
-        onerror="
-          if(!this.retryCount) this.retryCount = 0;
-          this.retryCount++;
-          if(this.retryCount === 1) {
-            this.src = this.src.replace('lh3.googleusercontent.com/d/', 'drive.google.com/thumbnail?id=').replace('=w500', '&sz=w500');
-          } else if(this.retryCount === 2) {
-            setTimeout(() => { this.src = '${photoUrl}'; this.retryCount = 1; }, 1000);
-          } else {
-            this.parentElement.innerHTML='${lecturer.shortName}';
-          }
-        ">`
-    : lecturer.shortName;
+  return rawUrl;
+}
+
+function createLecturerCard(lecturer) {
+  const photoUrl = buildPhotoUrl(lecturer.photo);
+
+  const photoContent = photoUrl
+    ? `<img src="${photoUrl}" alt="${lecturer.name}" loading="lazy"
+        onerror="this.onerror=null; this.parentElement.innerHTML='<span style=font-size:2rem;font-weight:900>${lecturer.shortName}</span>'">`
+    : `<span style="font-size:2rem;font-weight:900">${lecturer.shortName}</span>`;
 
   const position = lecturer.functionalPosition || 'Dosen';
   

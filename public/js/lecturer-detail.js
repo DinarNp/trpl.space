@@ -48,47 +48,17 @@ async function loadLecturerDetail(shortName) {
 }
 
 function renderLecturerDetail(lecturer) {
-  // Convert Google Drive link to direct image link
-  let photoUrl = lecturer.photo;
-  let photoContent;
-  
-  if (photoUrl && photoUrl.includes('drive.google.com')) {
-    const fileIdMatch = photoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-    if (fileIdMatch && fileIdMatch[1]) {
-      const fileId = fileIdMatch[1];
-      
-      console.log('Photo URL:', photoUrl);
-      console.log('File ID:', fileId);
-      
-      // Use lh3.googleusercontent.com (most reliable), with fallbacks
-      const primaryUrl = `https://lh3.googleusercontent.com/d/${fileId}=w1000`;
-      const fallback1 = `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
-      const fallback2 = `https://drive.google.com/uc?export=view&id=${fileId}`;
-      
-      console.log('Primary URL:', primaryUrl);
-      
-      photoContent = `<img src="${primaryUrl}" alt="${lecturer.name}" 
-        onerror="
-          console.error('Image load failed:', this.src);
-          var img=this; 
-          img.onerror=function(){
-            console.error('Fallback 1 failed:', img.src);
-            img.onerror=function(){
-              console.error('Fallback 2 failed, showing shortName');
-              img.parentElement.innerHTML='${lecturer.shortName}';
-            }; 
-            img.src='${fallback2}';
-          }; 
-          img.src='${fallback1}';
-        ">`;
-    } else {
-      photoContent = lecturer.shortName;
-    }
-  } else {
-    photoContent = photoUrl 
-      ? `<img src="${photoUrl}" alt="${lecturer.name}" onerror="this.parentElement.innerHTML='${lecturer.shortName}'">`
-      : lecturer.shortName;
-  }
+  const rawPhoto = lecturer.photo;
+  const proxyUrl = rawPhoto
+    ? (rawPhoto.includes('drive.google.com')
+        ? `/api/image-proxy?url=${encodeURIComponent(rawPhoto)}`
+        : rawPhoto)
+    : null;
+
+  const photoContent = proxyUrl
+    ? `<img src="${proxyUrl}" alt="${lecturer.name}"
+        onerror="this.onerror=null; this.parentElement.innerHTML='<span style=font-size:3rem;font-weight:900>${lecturer.shortName}</span>'">`
+    : lecturer.shortName;
 
   // Positions for sidebar
   const sidebarPositionsHTML = lecturer.functionalPosition

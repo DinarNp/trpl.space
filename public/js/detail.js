@@ -108,10 +108,10 @@ function renderProjectDetail(project) {
           </div>
           <div class="detail-actions">
             <a href="${project.url}" target="_blank" class="btn-visit">
-              🚀 Visit Project
+              ${project.category?.toLowerCase().trim() === 'sistem' ? '🖥️ Akses Sistem' : '🚀 Visit Project'}
             </a>
-            <a href="/" class="btn-back">
-              ← Back to Projects
+            <a href="${project.category?.toLowerCase().trim() === 'sistem' ? 'systems.html' : '/'}" class="btn-back">
+              ${project.category?.toLowerCase().trim() === 'sistem' ? '← Back to Systems' : '← Back to Projects'}
             </a>
           </div>
         </div>

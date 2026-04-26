@@ -25,7 +25,7 @@ function checkAuth() {
 
 checkAuth();
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 let lecturers = [], labs = [], editingMemberId = null, deletingMemberId = null;
 
 const elements = {
@@ -112,19 +112,14 @@ function renderMembers() {
     return;
   }
   elements.tableBody.innerHTML = lecturers.map(lec => {
-    // Convert Google Drive link to direct image link
-    let photoUrl = lec.photo;
-    if (photoUrl && photoUrl.includes('drive.google.com')) {
-      const fileIdMatch = photoUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
-      if (fileIdMatch && fileIdMatch[1]) {
-        const fileId = fileIdMatch[1];
-        photoUrl = `https://lh3.googleusercontent.com/d/${fileId}=w200`;
-      }
-    }
-    
+    const proxyUrl = lec.photo
+      ? (lec.photo.includes('drive.google.com')
+          ? `/api/image-proxy?url=${encodeURIComponent(lec.photo)}`
+          : lec.photo)
+      : null;
     return `
       <tr>
-        <td>${photoUrl ? `<img src="${photoUrl}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:center 10%;" onerror="this.outerHTML='👤'">` : '👤'}</td>
+        <td>${proxyUrl ? `<img src="${proxyUrl}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;object-position:center 10%;" onerror="this.outerHTML='👤'">` : '👤'}</td>
         <td>${lec.nip}</td>
         <td><strong>${lec.name}</strong></td>
         <td><span class="short-name-preview">${lec.shortName}</span></td>
@@ -181,47 +176,53 @@ function openAddModal() {
   elements.form.reset();
   elements.educationList.innerHTML = '';
   elements.shortNamePreview.textContent = 'XXX';
-  addEducationItem();
   elements.modal.classList.add('active');
 }
 
-function openEditModal(id) {
-  const lec = lecturers.find(l => l.id === id);
-  if (!lec) return;
+async function openEditModal(id) {
   editingMemberId = id;
   elements.modalTitle.textContent = 'Edit Member';
-  
-  document.getElementById('lecturerId').value = lec.id;
-  document.getElementById('nip').value = lec.nip;
-  document.getElementById('name').value = lec.name;
-  document.getElementById('shortName').value = lec.shortName;
-  document.getElementById('email').value = lec.email;
-  document.getElementById('photo').value = lec.photo || '';
-  document.getElementById('functionalPosition').value = lec.functionalPosition || '';
-  document.getElementById('structuralPosition').value = lec.structuralPosition || '';
-  document.getElementById('researchInterest').value = lec.researchInterest || '';
-  document.getElementById('googleScholar').value = lec.googleScholar || '';
-  document.getElementById('scopus').value = lec.scopus || '';
-  document.getElementById('sinta').value = lec.sinta || '';
-  document.getElementById('academicStaffUGM').value = lec.academicStaffUGM || '';
-  document.getElementById('pddikti').value = lec.pddikti || '';
-  elements.shortNamePreview.textContent = lec.shortName;
-  
-  elements.educationList.innerHTML = '';
-  if (lec.educations && lec.educations.length > 0) {
-    lec.educations.forEach(edu => addEducationItem(edu.degree, edu.institution, edu.major, edu.thesisTitle || '', edu.startYear, edu.endYear));
-  } else {
-    addEducationItem();
-  }
-  
-  labs.forEach(lab => {
-    const checkbox = document.getElementById(`lab_${lab.id}`);
-    if (checkbox) {
-      checkbox.checked = lec.labs?.some(l => l.labId === lab.id) || false;
-    }
-  });
-  
   elements.modal.classList.add('active');
+  elements.educationList.innerHTML = '<p style="color:var(--text-secondary);text-align:center;padding:1rem;">Loading...</p>';
+
+  try {
+    const response = await fetch(`${API_URL}/lecturers/${id}`);
+    const data = await response.json();
+    if (!data.success) throw new Error(data.message);
+    const lec = data.data;
+
+    document.getElementById('lecturerId').value = lec.id;
+    document.getElementById('nip').value = lec.nip;
+    document.getElementById('name').value = lec.name;
+    document.getElementById('shortName').value = lec.shortName;
+    document.getElementById('email').value = lec.email;
+    document.getElementById('photo').value = lec.photo || '';
+    document.getElementById('functionalPosition').value = lec.functionalPosition || '';
+    document.getElementById('structuralPosition').value = lec.structuralPosition || '';
+    document.getElementById('researchInterest').value = lec.researchInterest || '';
+    document.getElementById('googleScholar').value = lec.googleScholar || '';
+    document.getElementById('scopus').value = lec.scopus || '';
+    document.getElementById('sinta').value = lec.sinta || '';
+    document.getElementById('academicStaffUGM').value = lec.academicStaffUGM || '';
+    document.getElementById('pddikti').value = lec.pddikti || '';
+    elements.shortNamePreview.textContent = lec.shortName;
+
+    elements.educationList.innerHTML = '';
+    if (lec.educations && lec.educations.length > 0) {
+      lec.educations.forEach(edu => addEducationItem(edu.degree, edu.institution, edu.major, edu.thesisTitle || '', edu.startYear, edu.endYear));
+    }
+
+    labs.forEach(lab => {
+      const checkbox = document.getElementById(`lab_${lab.id}`);
+      if (checkbox) {
+        checkbox.checked = lec.labs?.some(l => l.labId === lab.id) || false;
+      }
+    });
+  } catch (err) {
+    console.error('Error loading lecturer:', err);
+    showToast('Gagal memuat data member', 'error');
+    closeModal();
+  }
 }
 
 function closeModal() {
