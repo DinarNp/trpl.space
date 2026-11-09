@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jadwal Sidang - TRPL.SPACE</title>
+  <meta name="robots" content="noindex">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .panel {
+      background: rgba(14, 26, 53, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(0, 229, 255, 0.18);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .panel h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.4rem;
+      letter-spacing: 1px;
+    }
+    .panel .sub { color: var(--text-secondary); margin-bottom: 1.25rem; }
+
+    .controls { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 1.25rem; }
+    .controls label { color: var(--text-secondary); font-weight: 600; }
+    .seg { display: inline-flex; border: 1px solid rgba(0,229,255,0.3); border-radius: 10px; overflow: hidden; }
+    .seg button {
+      background: transparent; color: var(--text-secondary); border: none;
+      padding: 0.45rem 0.9rem; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+    }
+    .seg button.on { background: rgba(0,229,255,0.18); color: var(--neon-cyan); }
+
+    /* Grid */
+    .grid-wrap { overflow-x: auto; }
+    table.avail { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 820px; }
+    .avail th, .avail td { font-size: 0.82rem; text-align: center; }
+    .avail thead th { color: var(--text-secondary); font-weight: 600; padding: 0.25rem 0; }
+    .avail th.name { text-align: left; padding-right: 0.75rem; white-space: nowrap; color: var(--text-primary); font-size: 0.95rem; }
+    .avail th.name .k { color: var(--neon-yellow); font-size: 0.7rem; margin-left: 0.3rem; }
+    .avail td.c { height: 22px; border-radius: 3px; background: rgba(255,255,255,0.04); }
+    .avail td.c.free { background: rgba(0,255,163,0.55); }
+    .avail td.c.part { background: rgba(0,255,163,0.22); }
+    .legend .l-part::before { background: rgba(0,255,163,0.22); }
+    .avail td.c.blocked { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 4px, transparent 4px 8px); }
+    .avail tr.count td.c { color: #06091a; font-weight: 700; }
+    .avail tr.count th { color: var(--neon-cyan); }
+    .avail tr.sep td, .avail tr.sep th { height: 6px; }
+    .avail tbody tr.day th {
+      text-align: left; padding: 0.9rem 0 0.3rem; font-family: 'Orbitron', sans-serif;
+      color: var(--neon-cyan); font-size: 0.95rem; letter-spacing: 1px;
+    }
+
+    .legend { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-top: 1rem; color: var(--text-secondary); font-size: 0.9rem; }
+    .legend span::before { content: ''; display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: -2px; margin-right: 0.4rem; }
+    .legend .l-free::before { background: rgba(0,255,163,0.55); }
+    .legend .l-no::before { background: rgba(255,255,255,0.06); }
+    .legend .l-bl::before { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.15) 0 3px, transparent 3px 6px); }
+
+    /* Recommendations */
+    .rec-day { margin-bottom: 1.5rem; }
+    .rec-day h3 { font-size: 0.95rem; color: var(--neon-cyan); margin-bottom: 0.6rem; letter-spacing: 1px; }
+    .rec {
+      border: 1px solid rgba(0,229,255,0.15); border-radius: 12px; padding: 0.9rem 1.1rem; margin-bottom: 0.6rem;
+      display: grid; grid-template-columns: 150px 1fr; gap: 0.5rem 1rem; align-items: start;
+      background: rgba(6,9,26,0.4);
+    }
+    .rec .time { font-family: 'Orbitron', sans-serif; font-weight: 700; font-size: 1rem; }
+    .rec .dur { color: var(--text-secondary); font-size: 0.85rem; }
+    .rec .row { margin-bottom: 0.35rem; }
+    .rec .lbl { color: var(--text-secondary); font-size: 0.85rem; margin-right: 0.4rem; }
+    .chip {
+      display: inline-block; padding: 0.15rem 0.6rem; border-radius: 10px; font-size: 0.85rem; font-weight: 600;
+      margin: 0 0.25rem 0.25rem 0; border: 1px solid;
+    }
+    .chip.ketua { color: var(--neon-yellow); border-color: rgba(255,230,0,0.4); background: rgba(255,230,0,0.08); }
+    .chip.anggota { color: var(--neon-pink); border-color: rgba(255,45,140,0.35); background: rgba(255,45,140,0.08); }
+    .combos { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.6; }
+    .combos b { color: var(--text-primary); font-weight: 600; }
+    .best { border-color: var(--neon-green); box-shadow: 0 0 18px rgba(0,255,163,0.15); }
+    .badge { font-size: 0.7rem; color: #06091a; background: var(--neon-green); padding: 0.1rem 0.5rem; border-radius: 6px; font-weight: 700; margin-left: 0.4rem; vertical-align: 2px; }
+    .empty { color: var(--text-secondary); font-style: italic; }
+
+    .notes { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7; padding-left: 1.2rem; }
+    .notes b { color: var(--text-primary); }
+
+    @media (max-width: 640px) {
+      .container { padding: 0 1rem; }
+      .rec { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cyber-grid"></div>
+  <div class="gradient-bg"></div>
+
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="logo" style="text-decoration:none;color:inherit;">
+        <span class="logo-bracket">&lt;</span>
+        <div><div class="logo-text">TRPL.SPACE</div></div>
+        <span class="logo-bracket">&gt;</span>
+      </a>
+    </div>
+  </header>
+
+  <section class="hero" style="padding: 5rem 0 3rem;">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">
+          <span class="glitch">SIDANG</span>
+          <span class="hero-subtitle">JADWAL KETERSEDIAAN DOSEN</span>
+        </h1>
+        <p class="hero-description">
+          Ketersediaan dosen penguji per hari (Senin–Jumat) dan rekomendasi slot sidang dengan 3 dosen,
+          di mana ketua sidang wajib salah satu dari <b>Ganjar</b>, <b>UT</b>, atau <b>Dinar</b>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-bottom: 4rem;">
+    <div class="container">
+
+      <div class="panel">
+        <h2>REKOMENDASI SLOT SIDANG</h2>
+        <p class="sub">Slot di mana minimal 3 dosen tersedia bersamaan, termasuk minimal 1 calon ketua.</p>
+        <div class="controls">
+          <label>Durasi sidang:</label>
+          <div class="seg" id="durSeg">
+            <button data-d="60">60 mnt</button>
+            <button data-d="90" class="on">90 mnt</button>
+            <button data-d="120">120 mnt</button>
+          </div>
+          <label style="display:inline-flex;align-items:center;gap:0.4rem;cursor:pointer;">
+            <input type="checkbox" id="jumatToggle"> Kosongkan Jumat 11:30–13:00 (ibadah Jumat)
+          </label>
+        </div>
+        <div id="recs"></div>
+      </div>
+
+      <div class="panel">
+        <h2>GRID KETERSEDIAAN</h2>
+        <p class="sub">Per kolom 15 menit, 07:00–17:00. Baris "Jumlah" menunjukkan berapa dosen tersedia penuh di kolom tersebut.</p>
+        <div class="grid-wrap"><table class="avail" id="grid"></table></div>
+        <div class="legend">
+          <span class="l-free">Tersedia</span>
+          <span class="l-part">Tersedia sebagian kolom</span>
+          <span class="l-no">Tidak tersedia</span>
+          <span class="l-bl">Ibadah Jumat (jika diaktifkan)</span>
+          <span style="color:var(--neon-yellow)">★ = calon ketua sidang</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h2>JADWAL ASLI &amp; ASUMSI</h2>
+        <p class="sub">Jadwal yang disampaikan dosen, dan cara jadwal yang kurang spesifik diterjemahkan.</p>
+        <ul class="notes" id="raw"></ul>
+        <ul class="notes" style="margin-top:1rem;">
+          <li><b>Jam tunggal</b> (mis. "14:00", "Kamis 12.00") dianggap blok 2 jam mulai jam tersebut.</li>
+          <li><b>Jam sesi:</b> sesi 1 07:15–08:55, sesi 2 09:15–10:55, sesi 3 12:15–13:55, sesi 4 14:15–15:55. Istirahat di antara sesi boleh dipakai sidang.</li>
+          <li><b>"Sesi 3–4"</b> (Dinar, Senin) = 12:15–15:55; <b>"siang"</b> (Dinar, Selasa) juga dianggap sesi 3–4.</li>
+          <li><b>"Sore" / "sore malam"</b> dihitung sampai 17:00; "full seharian" = 08:00–17:00.</li>
+          <li><b>Jumat 11:30–13:00</b> tidak dikosongkan secara default; aktifkan toggle di atas jika perlu.</li>
+          <li>Data ada di bagian atas skrip halaman ini (<code>LECTURERS</code>) dan mudah diubah.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <p>&copy; 2024 <span class="neon-text">TRPL.SPACE</span>. All rights reserved.</p>
+        <p>Lab Rekayasa Perangkat Lunak</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===== DATA =====
+    // Hari: 0=Senin, 1=Selasa, 2=Rabu, 3=Kamis, 4=Jumat
+    const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+    const KETUA = ['Ganjar', 'UT', 'Dinar'];
+    const DAY_START = '07:00', DAY_END = '17:00';
+    const CALC_STEP = 5;   // presisi perhitungan (menit)
+    const GRID_STEP = 15;  // lebar kolom grid (menit)
+    // Jam sesi kuliah. Istirahat di antara sesi tetap boleh dipakai sidang.
+    const SESI = { 1: ['07:15', '08:55'], 2: ['09:15', '10:55'], 3: ['12:15', '13:55'], 4: ['14:15', '15:55'] };
+    const sesi = (a, b) => [SESI[a][0], SESI[b][1]];
+    // Opsional: kosongkan Jumat 11:30–13:00 (ibadah Jumat). Bisa diaktifkan lewat toggle.
+    const JUMAT_BLOCK = { 4: [['11:30', '13:00']] };
+    let blockJumat = false;
+
+    const LECTURERS = [
+      { name: 'Divi',   raw: 'Senin 14:00, Selasa 14:00, Kamis 12:30–14:30, Jumat 08:30–11:30',
+        slots: { 0: [['14:00','16:00']], 1: [['14:00','16:00']], 3: [['12:30','14:30']], 4: [['08:30','11:30']] } },
+      { name: 'Ganjar', raw: 'Selasa 13:30–15:30, Rabu 09:00–14:00, Kamis 09:00–11:30 dan 14:00–sore malam, Jumat 09:00–sore',
+        slots: { 1: [['13:30','15:30']], 2: [['09:00','14:00']], 3: [['09:00','11:30'], ['14:00','17:00']], 4: [['09:00','17:00']] } },
+      { name: 'UT',     raw: 'Rabu, Kamis di atas jam 10 pagi',
+        slots: { 2: [['10:00','17:00']], 3: [['10:00','17:00']] } },
+      { name: 'Dinar',  raw: 'Senin sesi 3–4, Selasa siang, Rabu 07:00–12:00, Kamis 07:00–16:00, Jumat 07:00–16:00',
+        slots: { 0: [sesi(3, 4)], 1: [sesi(3, 4)], 2: [['07:00','12:00']], 3: [['07:00','16:00']], 4: [['07:00','16:00']] } },
+      { name: 'Imam',   raw: 'Rabu full seharian, Jumat 13:00–14:30',
+        slots: { 2: [['08:00','17:00']], 4: [['13:00','14:30']] } },
+      { name: 'Irkham', raw: 'Rabu 08:00–12:00, Kamis 12:30–14:00, Jumat 09:00–14:30',
+        slots: { 2: [['08:00','12:00']], 3: [['12:30','14:00']], 4: [['09:00','14:30']] } },
+      { name: 'Rifqi',  raw: 'Selasa 11:00–17:00, Rabu 09:00–12:00 atau 14:00–16:00, Kamis 08:00–12:00',
+        slots: { 1: [['11:00','17:00']], 2: [['09:00','12:00'], ['14:00','16:00']], 3: [['08:00','12:00']] } },
+      { name: 'Yos',    raw: 'Senin 09:00–12:00',
+        slots: { 0: [['09:00','12:00']] } },
+      { name: 'Firma',  raw: 'Senin 08:00–11:00, Selasa 14:00, Rabu 08:00–12:00, Kamis 12:00',
+        slots: { 0: [['08:00','11:00']], 1: [['14:00','16:00']], 2: [['08:00','12:00']], 3: [['12:00','14:00']] } },
+    ];
+
+    // ===== HELPERS =====
+    const toMin = s => { const [h, m] = s.split(':').map(Number); return h * 60 + (m || 0); };
+    const fmt = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+    // Menit [m, m+step) tercakup penuh oleh salah satu rentang
+    const inRanges = (ranges, m, step = CALC_STEP) => (ranges || []).some(([a, b]) => toMin(a) <= m && m + step <= toMin(b));
+    // Menit [m, m+step) beririsan dengan salah satu rentang
+    const touches = (ranges, m, step) => (ranges || []).some(([a, b]) => toMin(a) < m + step && m < toMin(b));
+    const isBlocked = (d, m, step = CALC_STEP) => blockJumat && touches(JUMAT_BLOCK[d], m, step);
+    const slotsOfDay = (step = CALC_STEP) => { const r = []; for (let m = toMin(DAY_START); m < toMin(DAY_END); m += step) r.push(m); return r; };
+    const freeAt = (d, m, step = CALC_STEP) => isBlocked(d, m, step) ? [] : LECTURERS.filter(l => inRanges(l.slots[d], m, step)).map(l => l.name);
+    const esc = s => s.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+    // ===== GRID =====
+    function renderGrid() {
+      const G = GRID_STEP;
+      const times = slotsOfDay(G);
+      let html = '<thead><tr><th></th>' + times.map(m => m % 60 === 0
+        ? `<th colspan="${60 / G}" style="text-align:left">${fmt(m)}</th>` : '').join('') + '</tr></thead><tbody>';
+      DAYS.forEach((day, d) => {
+        html += `<tr class="day"><th colspan="${times.length + 1}">${day.toUpperCase()}</th></tr>`;
+        LECTURERS.forEach(l => {
+          html += `<tr><th class="name">${esc(l.name)}${KETUA.includes(l.name) ? '<span class="k">★</span>' : ''}</th>`;
+          times.forEach(m => {
+            const cls = isBlocked(d, m, G) ? 'blocked'
+              : inRanges(l.slots[d], m, G) ? 'free'
+              : touches(l.slots[d], m, G) ? 'part' : '';
+            html += `<td class="c ${cls}" title="${esc(l.name)} · ${day} ${fmt(m)}–${fmt(m + G)}"></td>`;
+          });
+          html += '</tr>';
+        });
+        html += '<tr class="count"><th class="name" style="color:var(--neon-cyan)">Jumlah</th>';
+        times.forEach(m => {
+          const f = freeAt(d, m, G);
+          const hasK = f.some(n => KETUA.includes(n));
+          const ok = f.length >= 3 && hasK;
+          const bg = ok ? `rgba(0,229,255,${Math.min(0.35 + f.length * 0.1, 0.95)})` : f.length ? 'rgba(255,255,255,0.12)' : 'transparent';
+          const color = ok ? '#06091a' : 'var(--text-secondary)';
+          html += `<td class="c" style="background:${bg};color:${color}" title="${f.join(', ') || '-'}">${f.length || ''}</td>`;
+        });
+        html += '</tr>';
+      });
+      document.getElementById('grid').innerHTML = html + '</tbody>';
+    }
+
+    // ===== RECOMMENDATIONS =====
+    // Gabungkan slot berurutan yang punya himpunan dosen sama, lalu cari jendela >= durasi
+    // di mana ketua + 2 anggota tersedia sepanjang jendela.
+    function findWindows(d, dur) {
+      const times = slotsOfDay();
+      const segs = [];
+      times.forEach(m => {
+        const key = freeAt(d, m).join(',');
+        const last = segs[segs.length - 1];
+        if (last && last.key === key && last.end === m) last.end = m + CALC_STEP;
+        else segs.push({ key, start: m, end: m + CALC_STEP, free: key ? key.split(',') : [] });
+      });
+      // Jendela maksimal: untuk tiap titik awal segmen, perluas selama irisan tetap valid
+      const out = [];
+      for (let i = 0; i < segs.length; i++) {
+        let common = segs[i].free.slice();
+        for (let j = i; j < segs.length; j++) {
+          if (j > i) {
+            if (segs[j].start !== segs[j - 1].end) break;
+            common = common.filter(n => segs[j].free.includes(n));
+          }
+          const valid = common.length >= 3 && common.some(n => KETUA.includes(n));
+          if (!valid) break;
+          const nextCommon = j + 1 < segs.length && segs[j + 1].start === segs[j].end
+            ? common.filter(n => segs[j + 1].free.includes(n)) : [];
+          // simpan jika memperluas akan mengubah himpunan dosen (jendela maksimal untuk himpunan ini)
+          if (nextCommon.length !== common.length) {
+            const start = segs[i].start, end = segs[j].end;
+            if (end - start >= dur) out.push({ start, end, free: common.slice() });
+          }
+        }
+      }
+      // Buang jendela yang terkandung penuh dalam jendela lain dengan himpunan dosen superset
+      return out.filter((w, i) => !out.some((o, k) => k !== i &&
+        o.start <= w.start && o.end >= w.end && w.free.every(n => o.free.includes(n)) &&
+        (o.start < w.start || o.end > w.end || o.free.length > w.free.length)));
+    }
+
+    function combos(free) {
+      // Pasangan ketua + 2 anggota. Ketua harus dari KETUA, anggota dari dosen lain yang tersedia.
+      const res = [];
+      free.filter(n => KETUA.includes(n)).forEach(k => {
+        const others = free.filter(n => n !== k);
+        for (let a = 0; a < others.length; a++)
+          for (let b = a + 1; b < others.length; b++) res.push([k, others[a], others[b]]);
+      });
+      return res;
+    }
+
+    function renderRecs(dur) {
+      let html = '';
+      const all = [];
+      DAYS.forEach((day, d) => {
+        const wins = findWindows(d, dur);
+        wins.forEach(w => all.push({ d, ...w }));
+        html += `<div class="rec-day"><h3>${day.toUpperCase()}</h3>`;
+        if (!wins.length) html += `<p class="empty">Tidak ada slot ${dur} menit dengan 3 dosen + ketua.</p>`;
+        wins.forEach(w => { html += recCard(w, dur); });
+        html += '</div>';
+      });
+      document.getElementById('recs').innerHTML = html;
+    }
+
+    function recCard(w, dur) {
+      const ketua = w.free.filter(n => KETUA.includes(n));
+      const lain = w.free.filter(n => !KETUA.includes(n));
+      const cs = combos(w.free);
+      const best = w.free.length >= 5 || ketua.length >= 2;
+      const sample = cs.slice(0, 6).map(c => `<b>${c[0]}</b> (ketua) + ${c[1]}, ${c[2]}`).join('<br>');
+      return `<div class="rec ${best ? 'best' : ''}">
+        <div>
+          <div class="time">${fmt(w.start)}–${fmt(w.end)}${best ? '<span class="badge">FLEKSIBEL</span>' : ''}</div>
+          <div class="dur">${w.end - w.start} menit · ${w.free.length} dosen</div>
+        </div>
+        <div>
+          <div class="row"><span class="lbl">Calon ketua:</span>${ketua.map(n => `<span class="chip ketua">★ ${n}</span>`).join('')}</div>
+          <div class="row"><span class="lbl">Dosen lain:</span>${lain.length ? lain.map(n => `<span class="chip anggota">${n}</span>`).join('') : '<span class="empty">—</span>'}</div>
+          <div class="combos">${cs.length} kemungkinan susunan (ketua + 2 anggota). Contoh:<br>${sample}${cs.length > 6 ? '<br>…' : ''}</div>
+        </div>
+      </div>`;
+    }
+
+    function renderRaw() {
+      document.getElementById('raw').innerHTML = LECTURERS.map(l =>
+        `<li><b>${esc(l.name)}</b>${KETUA.includes(l.name) ? ' <span style="color:var(--neon-yellow)">★</span>' : ''}: ${esc(l.raw)}</li>`).join('');
+    }
+
+    let currentDur = 90;
+    document.getElementById('durSeg').addEventListener('click', e => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      document.querySelectorAll('#durSeg button').forEach(b => b.classList.toggle('on', b === btn));
+      currentDur = Number(btn.dataset.d);
+      renderRecs(currentDur);
+    });
+    document.getElementById('jumatToggle').addEventListener('change', e => {
+      blockJumat = e.target.checked;
+      renderGrid();
+      renderRecs(currentDur);
+    });
+
+    renderGrid();
+    renderRecs(currentDur);
+    renderRaw();
+  </script>
+</body>
+</html>
