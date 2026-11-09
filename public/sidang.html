@@ -36,13 +36,30 @@
 
     /* Grid */
     .grid-wrap { overflow-x: auto; }
-    table.avail { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 820px; }
+    table.avail { border-collapse: separate; border-spacing: 2px; width: 100%; min-width: 760px; }
     .avail th, .avail td { font-size: 0.82rem; text-align: center; }
     .avail thead th { color: var(--text-secondary); font-weight: 600; padding: 0.25rem 0; }
     .avail th.name { text-align: left; padding-right: 0.75rem; white-space: nowrap; color: var(--text-primary); font-size: 0.95rem; }
     .avail th.name .k { color: var(--neon-yellow); font-size: 0.7rem; margin-left: 0.3rem; }
     .avail td.c { height: 22px; border-radius: 3px; background: rgba(255,255,255,0.04); }
     .avail td.c.free { background: rgba(0,255,163,0.55); }
+    /* Hover nama */
+    [data-name] { cursor: default; transition: background 0.15s, box-shadow 0.15s, color 0.15s; }
+    .avail th.name { border-radius: 4px; padding-left: 0.4rem; }
+    .avail tr.hl th.name { background: rgba(0,229,255,0.15); color: var(--neon-cyan); }
+    .avail tr.hl td.c { box-shadow: inset 0 0 0 1px rgba(0,229,255,0.6); }
+    .avail tr.dim { opacity: 0.35; }
+    .chip.hl { box-shadow: 0 0 12px currentColor; background: rgba(255,255,255,0.12); }
+    .name-tip {
+      position: fixed; z-index: 200; pointer-events: none; max-width: 320px;
+      background: rgba(6,9,26,0.96); border: 1px solid var(--neon-cyan); border-radius: 10px;
+      padding: 0.7rem 0.9rem; font-size: 0.9rem; line-height: 1.5; color: var(--text-primary);
+      box-shadow: 0 0 24px rgba(0,229,255,0.25); opacity: 0; transition: opacity 0.12s;
+    }
+    .name-tip.show { opacity: 1; }
+    .name-tip .t-name { font-family: 'Orbitron', sans-serif; font-weight: 700; color: var(--neon-cyan); margin-bottom: 0.3rem; }
+    .name-tip .t-row { color: var(--text-secondary); }
+    .name-tip .t-row b { color: var(--text-primary); font-weight: 600; display: inline-block; min-width: 56px; }
     .avail td.c.part { background: rgba(0,255,163,0.22); }
     .legend .l-part::before { background: rgba(0,255,163,0.22); }
     .avail td.c.blocked { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 4px, transparent 4px 8px); }
@@ -61,8 +78,6 @@
     .legend .l-bl::before { background: repeating-linear-gradient(45deg, rgba(255,255,255,0.15) 0 3px, transparent 3px 6px); }
 
     /* Recommendations */
-    .rec-day { margin-bottom: 1.5rem; }
-    .rec-day h3 { font-size: 0.95rem; color: var(--neon-cyan); margin-bottom: 0.6rem; letter-spacing: 1px; }
     .rec {
       border: 1px solid rgba(0,229,255,0.15); border-radius: 12px; padding: 0.9rem 1.1rem; margin-bottom: 0.6rem;
       display: grid; grid-template-columns: 150px 1fr; gap: 0.5rem 1rem; align-items: start;
@@ -87,6 +102,80 @@
     .notes { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7; padding-left: 1.2rem; }
     .notes b { color: var(--text-primary); }
 
+
+    /* Toolbar & tabs */
+    .toolbar {
+      position: sticky; top: calc(var(--hdr, 100px) + 10px); z-index: 50;
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+      background: rgba(10, 18, 40, 0.92); backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 16px;
+      padding: 0.75rem; margin-bottom: 1.25rem; box-shadow: 0 8px 30px rgba(0,0,0,0.35);
+    }
+    .day-tabs { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+    .day-tab {
+      background: transparent; border: 1px solid transparent; border-radius: 10px;
+      color: var(--text-secondary); cursor: pointer; padding: 0.5rem 0.95rem;
+      font-family: 'Orbitron', sans-serif; font-size: 0.82rem; font-weight: 600; letter-spacing: 0.5px;
+      display: flex; flex-direction: column; align-items: center; gap: 0.15rem; min-width: 84px;
+      transition: all 0.2s;
+    }
+    .day-tab:hover { color: var(--text-primary); background: rgba(255,255,255,0.05); }
+    .day-tab .cnt { font-family: 'Rajdhani', sans-serif; font-size: 0.78rem; font-weight: 600; letter-spacing: 0; }
+    .day-tab .cnt.none { opacity: 0.5; }
+    .day-tab .cnt.some { color: var(--neon-green); }
+    .day-tab.on {
+      color: var(--neon-cyan); border-color: var(--neon-cyan); background: rgba(0,229,255,0.1);
+      box-shadow: 0 0 16px rgba(0,229,255,0.2);
+    }
+    .day-tab.empty-day:not(.on) { opacity: 0.55; }
+    .toolbar-opts { display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
+    .opt { display: flex; align-items: center; gap: 0.5rem; }
+    .opt-lbl { color: var(--text-secondary); font-weight: 600; font-size: 0.9rem; }
+    .switch { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-secondary); font-weight: 600; font-size: 0.9rem; }
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch .track { width: 34px; height: 18px; border-radius: 9px; background: rgba(255,255,255,0.15); position: relative; transition: background 0.2s; }
+    .switch .track::after { content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--text-primary); transition: transform 0.2s; }
+    .switch input:checked + .track { background: var(--neon-cyan); }
+    .switch input:checked + .track::after { transform: translateX(16px); background: #06091a; }
+    .switch input:focus-visible + .track { outline: 2px solid var(--neon-cyan); outline-offset: 2px; }
+
+    .day-summary { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .stat {
+      flex: 1; min-width: 150px; background: rgba(14,26,53,0.7); border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 12px; padding: 0.9rem 1.1rem;
+    }
+    .stat .v { font-family: 'Orbitron', sans-serif; font-size: 1.35rem; font-weight: 800; color: var(--text-primary); }
+    .stat .k2 { color: var(--text-secondary); font-size: 0.82rem; text-transform: uppercase; letter-spacing: 1px; }
+
+    .panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .panel-head h2 { margin: 0; }
+    .sub-inline { color: var(--text-secondary); font-size: 0.9rem; }
+
+    /* Timeline mini bar di kartu */
+    .tl { position: relative; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); margin: 0.6rem 0 0.2rem; }
+    .tl i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: var(--gradient-primary); }
+    .tl-lbl { display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 0.7rem; }
+    .rec details summary { cursor: pointer; color: var(--neon-cyan); font-size: 0.88rem; margin-top: 0.3rem; list-style: none; }
+    .rec details summary::-webkit-details-marker { display: none; }
+    .rec details summary::before { content: '▸ '; }
+    .rec details[open] summary::before { content: '▾ '; }
+    .combo-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 0.25rem 1rem; margin-top: 0.5rem; }
+    .badge.top { background: var(--neon-yellow); }
+
+    .unavail { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.75rem; }
+    .legend .l-ok::before { background: rgba(0,229,255,0.75); }
+    details.info summary { cursor: pointer; list-style: none; }
+    details.info summary::-webkit-details-marker { display: none; }
+    details.info summary h2 { display: inline; }
+    details.info summary::after { content: ' ▸'; color: var(--neon-cyan); }
+    details.info[open] summary::after { content: ' ▾'; }
+    details.info[open] summary { margin-bottom: 1rem; }
+
+    @media (max-width: 760px) {
+      .day-tabs { width: 100%; display: grid; grid-template-columns: repeat(5, 1fr); }
+      .day-tab { min-width: 0; padding: 0.45rem 0.2rem; font-size: 0.7rem; }
+    }
+
     @media (max-width: 640px) {
       .container { padding: 0 1rem; }
       .rec { grid-template-columns: 1fr; }
@@ -107,7 +196,7 @@
     </div>
   </header>
 
-  <section class="hero" style="padding: 5rem 0 3rem;">
+  <section class="hero" style="padding: 3rem 0 2rem; min-height: 0;">
     <div class="container">
       <div class="hero-content">
         <h1 class="hero-title">
@@ -125,39 +214,53 @@
   <section style="padding-bottom: 4rem;">
     <div class="container">
 
-      <div class="panel">
-        <h2>REKOMENDASI SLOT SIDANG</h2>
-        <p class="sub">Slot di mana minimal 3 dosen tersedia bersamaan, termasuk minimal 1 calon ketua.</p>
-        <div class="controls">
-          <label>Durasi sidang:</label>
-          <div class="seg" id="durSeg">
-            <button data-d="60">60 mnt</button>
-            <button data-d="90" class="on">90 mnt</button>
-            <button data-d="120">120 mnt</button>
+      <div class="toolbar" id="toolbar">
+        <div class="day-tabs" id="dayTabs" role="tablist" aria-label="Pilih hari"></div>
+        <div class="toolbar-opts">
+          <div class="opt">
+            <span class="opt-lbl">Durasi</span>
+            <div class="seg" id="durSeg">
+              <button data-d="60">60′</button>
+              <button data-d="90" class="on">90′</button>
+              <button data-d="120">120′</button>
+            </div>
           </div>
-          <label style="display:inline-flex;align-items:center;gap:0.4rem;cursor:pointer;">
-            <input type="checkbox" id="jumatToggle"> Kosongkan Jumat 11:30–13:00 (ibadah Jumat)
+          <label class="switch">
+            <input type="checkbox" id="jumatToggle">
+            <span class="track"></span>
+            <span>Kosongkan ibadah Jumat</span>
           </label>
+        </div>
+      </div>
+
+      <div id="daySummary" class="day-summary"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>REKOMENDASI SLOT</h2>
+          <span class="sub-inline">3 dosen · ketua wajib ★ Ganjar / UT / Dinar</span>
         </div>
         <div id="recs"></div>
       </div>
 
       <div class="panel">
-        <h2>GRID KETERSEDIAAN</h2>
-        <p class="sub">Per kolom 15 menit, 07:00–17:00. Baris "Jumlah" menunjukkan berapa dosen tersedia penuh di kolom tersebut.</p>
+        <div class="panel-head">
+          <h2>GRID KETERSEDIAAN</h2>
+          <span class="sub-inline">per 15 menit · arahkan kursor ke nama untuk detail</span>
+        </div>
         <div class="grid-wrap"><table class="avail" id="grid"></table></div>
+        <p class="unavail" id="unavail"></p>
         <div class="legend">
           <span class="l-free">Tersedia</span>
-          <span class="l-part">Tersedia sebagian kolom</span>
+          <span class="l-part">Sebagian</span>
           <span class="l-no">Tidak tersedia</span>
-          <span class="l-bl">Ibadah Jumat (jika diaktifkan)</span>
-          <span style="color:var(--neon-yellow)">★ = calon ketua sidang</span>
+          <span class="l-bl">Ibadah Jumat</span>
+          <span class="l-ok">Baris jumlah: memenuhi syarat</span>
         </div>
       </div>
 
-      <div class="panel">
-        <h2>JADWAL ASLI &amp; ASUMSI</h2>
-        <p class="sub">Jadwal yang disampaikan dosen, dan cara jadwal yang kurang spesifik diterjemahkan.</p>
+      <details class="panel info">
+        <summary><h2>JADWAL ASLI &amp; ASUMSI</h2></summary>
         <ul class="notes" id="raw"></ul>
         <ul class="notes" style="margin-top:1rem;">
           <li><b>Jam tunggal</b> (mis. "14:00", "Kamis 12.00") dianggap blok 2 jam mulai jam tersebut.</li>
@@ -167,7 +270,7 @@
           <li><b>Jumat 11:30–13:00</b> tidak dikosongkan secara default; aktifkan toggle di atas jika perlu.</li>
           <li>Data ada di bagian atas skrip halaman ini (<code>LECTURERS</code>) dan mudah diubah.</li>
         </ul>
-      </div>
+      </details>
 
     </div>
   </section>
@@ -231,34 +334,36 @@
 
     // ===== GRID =====
     function renderGrid() {
-      const G = GRID_STEP;
+      const G = GRID_STEP, d = currentDay, day = DAYS[d];
       const times = slotsOfDay(G);
+      const avail = LECTURERS.filter(l => l.slots[d]);
+      const absent = LECTURERS.filter(l => !l.slots[d]);
       let html = '<thead><tr><th></th>' + times.map(m => m % 60 === 0
         ? `<th colspan="${60 / G}" style="text-align:left">${fmt(m)}</th>` : '').join('') + '</tr></thead><tbody>';
-      DAYS.forEach((day, d) => {
-        html += `<tr class="day"><th colspan="${times.length + 1}">${day.toUpperCase()}</th></tr>`;
-        LECTURERS.forEach(l => {
-          html += `<tr><th class="name">${esc(l.name)}${KETUA.includes(l.name) ? '<span class="k">★</span>' : ''}</th>`;
-          times.forEach(m => {
-            const cls = isBlocked(d, m, G) ? 'blocked'
-              : inRanges(l.slots[d], m, G) ? 'free'
-              : touches(l.slots[d], m, G) ? 'part' : '';
-            html += `<td class="c ${cls}" title="${esc(l.name)} · ${day} ${fmt(m)}–${fmt(m + G)}"></td>`;
-          });
-          html += '</tr>';
-        });
-        html += '<tr class="count"><th class="name" style="color:var(--neon-cyan)">Jumlah</th>';
+      avail.forEach(l => {
+        html += `<tr data-row="${esc(l.name)}"><th class="name" data-name="${esc(l.name)}">${esc(l.name)}${KETUA.includes(l.name) ? '<span class="k">★</span>' : ''}</th>`;
         times.forEach(m => {
-          const f = freeAt(d, m, G);
-          const hasK = f.some(n => KETUA.includes(n));
-          const ok = f.length >= 3 && hasK;
-          const bg = ok ? `rgba(0,229,255,${Math.min(0.35 + f.length * 0.1, 0.95)})` : f.length ? 'rgba(255,255,255,0.12)' : 'transparent';
-          const color = ok ? '#06091a' : 'var(--text-secondary)';
-          html += `<td class="c" style="background:${bg};color:${color}" title="${f.join(', ') || '-'}">${f.length || ''}</td>`;
+          const cls = isBlocked(d, m, G) ? 'blocked'
+            : inRanges(l.slots[d], m, G) ? 'free'
+            : touches(l.slots[d], m, G) ? 'part' : '';
+          html += `<td class="c ${cls}" title="${esc(l.name)} · ${day} ${fmt(m)}–${fmt(m + G)}"></td>`;
         });
         html += '</tr>';
       });
+      html += `<tr class="sep"><td colspan="${times.length + 1}"></td></tr>`;
+      html += '<tr class="count"><th class="name" style="color:var(--neon-cyan)">Jumlah</th>';
+      times.forEach(m => {
+        const f = freeAt(d, m, G);
+        const ok = f.length >= 3 && f.some(n => KETUA.includes(n));
+        const bg = ok ? `rgba(0,229,255,${Math.min(0.35 + f.length * 0.1, 0.95)})` : f.length ? 'rgba(255,255,255,0.12)' : 'transparent';
+        const color = ok ? '#06091a' : 'var(--text-secondary)';
+        html += `<td class="c" style="background:${bg};color:${color}" title="${fmt(m)}: ${f.join(', ') || '-'}">${f.length || ''}</td>`;
+      });
+      html += '</tr>';
       document.getElementById('grid').innerHTML = html + '</tbody>';
+      document.getElementById('unavail').innerHTML = absent.length
+        ? `Tidak tersedia hari ${day}: ${absent.map(l => `<b data-name="${esc(l.name)}" style="color:var(--text-primary)">${esc(l.name)}</b>`).join(', ')}`
+        : '';
     }
 
     // ===== RECOMMENDATIONS =====
@@ -310,60 +415,178 @@
       return res;
     }
 
-    function renderRecs(dur) {
-      let html = '';
-      const all = [];
-      DAYS.forEach((day, d) => {
-        const wins = findWindows(d, dur);
-        wins.forEach(w => all.push({ d, ...w }));
-        html += `<div class="rec-day"><h3>${day.toUpperCase()}</h3>`;
-        if (!wins.length) html += `<p class="empty">Tidak ada slot ${dur} menit dengan 3 dosen + ketua.</p>`;
-        wins.forEach(w => { html += recCard(w, dur); });
-        html += '</div>';
-      });
-      document.getElementById('recs').innerHTML = html;
+    // Urutkan: dosen terbanyak, lalu calon ketua terbanyak, lalu durasi, lalu jam mulai
+    const rankWins = wins => wins.slice().sort((x, y) =>
+      y.free.length - x.free.length ||
+      y.free.filter(n => KETUA.includes(n)).length - x.free.filter(n => KETUA.includes(n)).length ||
+      (y.end - y.start) - (x.end - x.start) || x.start - y.start);
+
+    function renderTabs() {
+      document.getElementById('dayTabs').innerHTML = DAYS.map((day, d) => {
+        const n = findWindows(d, currentDur).length;
+        return `<button class="day-tab ${d === currentDay ? 'on' : ''} ${n ? '' : 'empty-day'}" role="tab"
+          aria-selected="${d === currentDay}" data-day="${d}">${day}
+          <span class="cnt ${n ? 'some' : 'none'}">${n ? n + ' slot' : 'tidak ada'}</span></button>`;
+      }).join('');
     }
 
-    function recCard(w, dur) {
+    function renderSummary(wins) {
+      const ranked = rankWins(wins);
+      const best = ranked[0];
+      const ketuaHari = KETUA.filter(k => LECTURERS.find(l => l.name === k).slots[currentDay]);
+      const stats = [
+        ['Slot ' + currentDur + '′', wins.length || '0'],
+        ['Terbaik', best ? `${fmt(best.start)}–${fmt(best.end)}` : '—'],
+        ['Dosen terbanyak', best ? best.free.length : '—'],
+        ['Calon ketua hadir', ketuaHari.length ? ketuaHari.join(', ') : '—'],
+      ];
+      document.getElementById('daySummary').innerHTML = stats.map(([k, v]) =>
+        `<div class="stat"><div class="k2">${k}</div><div class="v">${v}</div></div>`).join('');
+    }
+
+    function renderRecs() {
+      const wins = findWindows(currentDay, currentDur);
+      renderSummary(wins);
+      const ranked = rankWins(wins);
+      document.getElementById('recs').innerHTML = ranked.length
+        ? ranked.map((w, i) => recCard(w, i === 0)).join('')
+        : `<p class="empty">Tidak ada slot ${currentDur} menit di hari ${DAYS[currentDay]} dengan 3 dosen termasuk calon ketua.
+           Coba hari lain atau durasi lebih pendek.</p>`;
+    }
+
+    function recCard(w, isTop) {
       const ketua = w.free.filter(n => KETUA.includes(n));
       const lain = w.free.filter(n => !KETUA.includes(n));
       const cs = combos(w.free);
-      const best = w.free.length >= 5 || ketua.length >= 2;
-      const sample = cs.slice(0, 6).map(c => `<b>${c[0]}</b> (ketua) + ${c[1]}, ${c[2]}`).join('<br>');
-      return `<div class="rec ${best ? 'best' : ''}">
+      const flex = !isTop && (w.free.length >= 5 || ketua.length >= 2);
+      const s0 = toMin(DAY_START), span = toMin(DAY_END) - s0;
+      const left = (w.start - s0) / span * 100, width = (w.end - w.start) / span * 100;
+      const line = c => `<div><b>${c[0]}</b> ★ + ${c[1]}, ${c[2]}</div>`;
+      return `<div class="rec ${isTop || flex ? 'best' : ''}">
         <div>
-          <div class="time">${fmt(w.start)}–${fmt(w.end)}${best ? '<span class="badge">FLEKSIBEL</span>' : ''}</div>
-          <div class="dur">${w.end - w.start} menit · ${w.free.length} dosen</div>
+          <div class="time">${fmt(w.start)}–${fmt(w.end)}</div>
+          <div class="dur">${w.end - w.start} menit · ${w.free.length} dosen
+            ${isTop ? '<span class="badge top">TERBAIK</span>' : flex ? '<span class="badge">FLEKSIBEL</span>' : ''}</div>
+          <div class="tl"><i style="left:${left}%;width:${width}%"></i></div>
+          <div class="tl-lbl"><span>${DAY_START}</span><span>${DAY_END}</span></div>
         </div>
         <div>
-          <div class="row"><span class="lbl">Calon ketua:</span>${ketua.map(n => `<span class="chip ketua">★ ${n}</span>`).join('')}</div>
-          <div class="row"><span class="lbl">Dosen lain:</span>${lain.length ? lain.map(n => `<span class="chip anggota">${n}</span>`).join('') : '<span class="empty">—</span>'}</div>
-          <div class="combos">${cs.length} kemungkinan susunan (ketua + 2 anggota). Contoh:<br>${sample}${cs.length > 6 ? '<br>…' : ''}</div>
+          <div class="row"><span class="lbl">Calon ketua:</span>${ketua.map(n => `<span class="chip ketua" data-name="${n}">★ ${n}</span>`).join('')}</div>
+          <div class="row"><span class="lbl">Dosen lain:</span>${lain.length ? lain.map(n => `<span class="chip anggota" data-name="${n}">${n}</span>`).join('') : '<span class="empty">—</span>'}</div>
+          <div class="combos">
+            ${cs.length <= 3
+              ? cs.map(line).join('')
+              : `${cs.slice(0, 2).map(line).join('')}
+                 <details><summary>Lihat semua ${cs.length} susunan</summary>
+                   <div class="combo-list">${cs.map(line).join('')}</div></details>`}
+          </div>
         </div>
       </div>`;
     }
 
     function renderRaw() {
       document.getElementById('raw').innerHTML = LECTURERS.map(l =>
-        `<li><b>${esc(l.name)}</b>${KETUA.includes(l.name) ? ' <span style="color:var(--neon-yellow)">★</span>' : ''}: ${esc(l.raw)}</li>`).join('');
+        `<li><b data-name="${esc(l.name)}">${esc(l.name)}</b>${KETUA.includes(l.name) ? ' <span style="color:var(--neon-yellow)">★</span>' : ''}: ${esc(l.raw)}</li>`).join('');
     }
 
+    // ===== STATE =====
     let currentDur = 90;
+    const HASH = DAYS.map(d => d.toLowerCase());
+    function bestDay() {
+      // Hari dengan slot terbaik (dosen terbanyak) sebagai default
+      let bd = 0, score = -1;
+      DAYS.forEach((_, d) => {
+        const top = rankWins(findWindows(d, currentDur))[0];
+        const sc = top ? top.free.length * 10 + top.free.filter(n => KETUA.includes(n)).length : -1;
+        if (sc > score) { score = sc; bd = d; }
+      });
+      return bd;
+    }
+    const fromHash = HASH.indexOf(location.hash.slice(1).toLowerCase());
+    let currentDay = fromHash >= 0 ? fromHash : bestDay();
+
+    function renderAll() { renderTabs(); renderRecs(); renderGrid(); }
+
+    function selectDay(d) {
+      currentDay = d;
+      history.replaceState(null, '', '#' + HASH[d]);
+      renderAll();
+    }
+
+    document.getElementById('dayTabs').addEventListener('click', e => {
+      const btn = e.target.closest('.day-tab');
+      if (btn) selectDay(Number(btn.dataset.day));
+    });
+    document.getElementById('dayTabs').addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const d = (currentDay + (e.key === 'ArrowRight' ? 1 : DAYS.length - 1)) % DAYS.length;
+      selectDay(d);
+      document.querySelector(`.day-tab[data-day="${d}"]`).focus();
+    });
     document.getElementById('durSeg').addEventListener('click', e => {
       const btn = e.target.closest('button');
       if (!btn) return;
       document.querySelectorAll('#durSeg button').forEach(b => b.classList.toggle('on', b === btn));
       currentDur = Number(btn.dataset.d);
-      renderRecs(currentDur);
+      renderAll();
     });
     document.getElementById('jumatToggle').addEventListener('change', e => {
       blockJumat = e.target.checked;
-      renderGrid();
-      renderRecs(currentDur);
+      renderAll();
     });
 
-    renderGrid();
-    renderRecs(currentDur);
+    // ===== HOVER NAMA =====
+    const tip = document.createElement('div');
+    tip.className = 'name-tip';
+    document.body.appendChild(tip);
+    let hovered = null;
+
+    function tipHtml(name) {
+      const l = LECTURERS.find(x => x.name === name);
+      if (!l) return '';
+      const rows = DAYS.map((day, d) => {
+        const r = l.slots[d];
+        return `<div class="t-row"><b>${day}</b> ${r ? r.map(([a, b]) => `${a}–${b}`).join(', ') : '—'}</div>`;
+      }).join('');
+      return `<div class="t-name">${esc(name)}${KETUA.includes(name) ? ' <span style="color:var(--neon-yellow)">★ calon ketua</span>' : ''}</div>${rows}`;
+    }
+
+    function setHover(name) {
+      if (name === hovered) return;
+      hovered = name;
+      document.querySelectorAll('.chip.hl').forEach(el => el.classList.remove('hl'));
+      document.querySelectorAll('#grid tr[data-row]').forEach(tr => {
+        tr.classList.toggle('hl', !!name && tr.dataset.row === name);
+        tr.classList.toggle('dim', !!name && tr.dataset.row !== name);
+      });
+      if (name) {
+        document.querySelectorAll(`.chip[data-name="${CSS.escape(name)}"]`).forEach(el => el.classList.add('hl'));
+        tip.innerHTML = tipHtml(name);
+        tip.classList.add('show');
+      } else {
+        tip.classList.remove('show');
+      }
+    }
+
+    document.addEventListener('mouseover', e => {
+      const el = e.target.closest('[data-name]');
+      setHover(el ? el.dataset.name : null);
+    });
+    document.addEventListener('mousemove', e => {
+      if (!hovered) return;
+      const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+      let x = e.clientX + pad, y = e.clientY + pad;
+      if (x + w > window.innerWidth - 8) x = e.clientX - w - pad;
+      if (y + h > window.innerHeight - 8) y = e.clientY - h - pad;
+      tip.style.left = Math.max(8, x) + 'px';
+      tip.style.top = Math.max(8, y) + 'px';
+    });
+
+    const setHdr = () => document.documentElement.style.setProperty('--hdr', document.querySelector('.header').offsetHeight + 'px');
+    setHdr();
+    window.addEventListener('resize', setHdr);
+
+    renderAll();
     renderRaw();
   </script>
 </body>
